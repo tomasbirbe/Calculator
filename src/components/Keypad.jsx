@@ -1,10 +1,11 @@
 import React, { useContext } from 'react';
 import styled from 'styled-components';
-import PropTypes from 'prop-types';
 import Key from './Key';
 import FnKey from './FnKey';
-import { DisplayContext } from './DisplayContext';
-import { InputDisplayContext } from './InputRefContext';
+import { DisplayContext } from './context/DisplayContext';
+import { InputDisplayContext } from './context/InputRefContext';
+import { calculate } from './logic/calculate';
+import { useLocalStorage } from './hooks/useLocalStorage';
 
 const keys = ['7', '8', '9', '4', '5', '6', '1', '2', '3', '0', '.'];
 const operators = ['/', '*', '-', '+'];
@@ -38,47 +39,30 @@ const Operators = styled.div`
   flex-flow:wrap row;    
   `;
 
-const Keypad = ({ setHistory }) => {
+const Keypad = () => {
   const { display, setDisplay } = useContext(DisplayContext);
   const inputDisplayRef = useContext(InputDisplayContext);
+  const [history, setHistory] = useLocalStorage('0', 'history');
 
-  const clearDisplay = () => function () {
+  const clearDisplay = () => {
     setDisplay('0');
     inputDisplayRef.current.focus();
   };
 
-  const calculate = () => function () {
-    try {
-      /*
-          MDN recomienda utilizar el constructor Function y pasarle una
-          funcion como string y ejecutarla.
-          (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval#never_use_eval!)
-          Tanto eval como Function son peligrosos al momento de utilizarlos
-
-          Se puede utilizar Function descomentando linea 54 y comentando linea 56.
-
-          Se va a utilizar eval() respetando la consigna.
-          */
-      // setDisplay(Function(`return ${display}`)().toString());
-      // setDisplay('0');
-      setDisplay(eval(display).toString());
-      inputDisplayRef.current.focus();
-    } catch (error) {
-      setDisplay('0');
-      inputDisplayRef.current.focus();
-    }
-  };
-
-  const saveInHistory = () => function () {
-    if (display.length) {
-      setHistory(eval(display).toString());
-      localStorage.setItem('history', display);
-    }
+  const resolveDisplay = () => {
+    setDisplay(calculate(display));
     inputDisplayRef.current.focus();
   };
 
-  const showHistory = () => function () {
-    setDisplay(localStorage.getItem('history'));
+  // Guardar un valor en el localStorage
+  const saveInHistory = () => {
+    setHistory(calculate(display));
+    inputDisplayRef.current.focus();
+  };
+
+  // Traer el valor guardado del localStorage
+  const showHistory = () => {
+    setDisplay(history);
     inputDisplayRef.current.focus();
   };
 
@@ -88,17 +72,16 @@ const Keypad = ({ setHistory }) => {
         {
           keys.map((element, index) => <Key key={index} content={element} />)
         }
-        <FnKey content="=" behavior={calculate} />
+        <FnKey content="=" behavior={() => resolveDisplay} />
       </Numbers>
       <Operators>
-
         {/*
           FnKey representa a todos los botones que no escriben en la pantalla
           y deben realizar alguna funcion especifica.
         */}
-        <FnKey content="SAVE" behavior={saveInHistory} width="50%" />
-        <FnKey content="SHOW" behavior={showHistory} width="50%" />
-        <FnKey content="C" behavior={clearDisplay} />
+        <FnKey content="SAVE" behavior={() => saveInHistory} width="50%" />
+        <FnKey content="SHOW" behavior={() => showHistory} width="50%" />
+        <FnKey content="C" behavior={() => clearDisplay} />
         {
           operators.map((element, index) => <Key key={index} content={element} />)
         }
@@ -107,8 +90,4 @@ const Keypad = ({ setHistory }) => {
   );
 };
 
-Keypad.propTypes = {
-  setHistory: PropTypes.func.isRequired,
-};
-
-export default Keypad;
+export default React.memo(Keypad);

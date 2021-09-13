@@ -13,7 +13,6 @@ const Button = styled.button`
   }
 `;
 
-// eslint-disable-next-line object-curly-newline
 const FnKey = ({ content, behavior, width }) => (
   <Button onClick={behavior()} width={width}>{content}</Button>
 );

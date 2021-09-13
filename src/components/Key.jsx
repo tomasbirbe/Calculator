@@ -1,8 +1,8 @@
 import React, { useContext } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { DisplayContext } from './DisplayContext';
-import { InputDisplayContext } from './InputRefContext';
+import { DisplayContext } from './context/DisplayContext';
+import { InputDisplayContext } from './context/InputRefContext';
 
 const Button = styled.button`
   width:100%;
@@ -20,6 +20,7 @@ const Key = ({ content }) => {
   const inputDisplayRef = useContext(InputDisplayContext);
 
   const writeOnDisplayWithKeypad = () => {
+    console.log('Esto es un render');
     if (display[0] === '0') {
       setDisplay(content.toString());
     } else {

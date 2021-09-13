@@ -1,7 +1,8 @@
 import React, { useContext } from 'react';
 import styled from 'styled-components';
-import { DisplayContext } from './DisplayContext';
-import { InputDisplayContext } from './InputRefContext';
+import { DisplayContext } from './context/DisplayContext';
+import { InputDisplayContext } from './context/InputRefContext';
+import { calculate } from './logic/calculate';
 
 const Screen = styled.input`
   width:100%;
@@ -27,6 +28,7 @@ const Display = () => {
   const inputDisplayRef = useContext(InputDisplayContext);
 
   const writeOnDisplayWithKeyboard = ({ target }) => {
+    // El siguiente condicional es simplemente para borrar el 0 cuando se empieza a tipear
     if (target.value[0] === '0') {
       const stringArray = target.value.split('');
       stringArray.shift();
@@ -36,17 +38,13 @@ const Display = () => {
     }
   };
 
-  const calculate = (e) => {
+  const resolveDisplay = (e) => {
     e.preventDefault();
-    try {
-      setDisplay(eval(display).toString());
-    } catch (error) {
-      setDisplay('0');
-    }
+    setDisplay(calculate(display));
   };
 
   return (
-    <Form onSubmit={calculate}>
+    <Form onSubmit={resolveDisplay}>
       <Screen
         value={display}
         onChange={writeOnDisplayWithKeyboard}
