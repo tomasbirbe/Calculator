@@ -1,0 +1,12 @@
+{
+  "extends": "airbnb",
+  "ignorePatterns": "*.js",
+  "rules": {
+    "react/no-array-index-key":"off",
+    "no-eval":"off",
+    "import/prefer-default-export": "off"
+  },
+  "env": {
+    "browser": true
+  }
+}

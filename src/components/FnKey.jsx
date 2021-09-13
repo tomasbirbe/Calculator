@@ -3,8 +3,7 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
 const Button = styled.button`
-  width:100%;
-  height:100%;
+  width:${({ width }) => width || '100%'};
   background:transparent;
   border:none;
   color:inherit;
@@ -14,17 +13,20 @@ const Button = styled.button`
   }
 `;
 
-const Key = ({ content, behavior }) => (
-  <Button onClick={behavior(content)}>{content}</Button>
+// eslint-disable-next-line object-curly-newline
+const FnKey = ({ content, behavior, width }) => (
+  <Button onClick={behavior()} width={width}>{content}</Button>
 );
 
-Key.defaultProps = {
+FnKey.defaultProps = {
   behavior: () => {},
+  width: '100%',
 };
 
-Key.propTypes = {
+FnKey.propTypes = {
   content: PropTypes.string.isRequired,
   behavior: PropTypes.func,
+  width: PropTypes.string,
 };
 
-export default Key;
+export default FnKey;
