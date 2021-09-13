@@ -20,7 +20,6 @@ const Key = ({ content }) => {
   const inputDisplayRef = useContext(InputDisplayContext);
 
   const writeOnDisplayWithKeypad = () => {
-    console.log('Esto es un render');
     if (display[0] === '0') {
       setDisplay(content.toString());
     } else {
